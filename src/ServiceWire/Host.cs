@@ -277,6 +277,12 @@ namespace ServiceWire
                         var messageType = (MessageType)binReader.ReadInt32();
                         switch (messageType)
                         {
+                            case MessageType.MethodInvocation:
+                                ProcessInvocation(zkSession, binReader, binWriter, sw);
+                                break;
+                            case MessageType.TerminateConnection:
+                                doContinue = false;
+                                break;
                             case MessageType.ZkInitiate:
                                 zkSession = new ZkSession(_zkRepository, _log, _stats);
                                 doContinue = zkSession.ProcessZkInitiation(binReader, binWriter, sw);
@@ -287,12 +293,6 @@ namespace ServiceWire
                                 break;
                             case MessageType.SyncInterface:
                                 ProcessSync(zkSession, binReader, binWriter, sw);
-                                break;
-                            case MessageType.MethodInvocation:
-                                ProcessInvocation(zkSession, binReader, binWriter, sw);
-                                break;
-                            case MessageType.TerminateConnection:
-                                doContinue = false;
                                 break;
                             default:
                                 doContinue = false;

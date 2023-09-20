@@ -85,7 +85,7 @@ namespace ServiceWire.NamedPipes
             }
             catch (Exception e)
             {
-                _log.Error("ProcessClientThread error: {0}", e.ToString().Flatten());
+                _log.Warn("ProcessClientThread error: {0}", e.ToString().Flatten());
             }
             finally
             {

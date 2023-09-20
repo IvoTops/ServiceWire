@@ -301,7 +301,7 @@ namespace ServiceWire
                     }
                     catch (Exception e) //do not resume operation on this thread if any errors are unhandled.
                     {
-                        _log.Warn("Error in ProcessRequest: {0}", e.ToString().Flatten());
+                        _log.Error("Error in ProcessRequest: {0}", e.ToString().Flatten());
                         doContinue = false;
                     }
                     sw.Stop();
@@ -310,7 +310,7 @@ namespace ServiceWire
             }
             catch (Exception fatalException)
             {
-                _log.Warn("Fatal error in ProcessRequest: {0}", fatalException.ToString().Flatten());
+                _log.Fatal("Fatal error in ProcessRequest: {0}", fatalException.ToString().Flatten());
             }
             finally
             {

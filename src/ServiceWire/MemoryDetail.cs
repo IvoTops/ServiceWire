@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ServiceWire
+﻿namespace ServiceWire
 {
     public class MemoryDetail
     {

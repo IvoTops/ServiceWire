@@ -1,10 +1,11 @@
-﻿using System;
+﻿using MemoryPack;
+using System;
 using System.Runtime.Serialization;
 
 namespace ServiceWire
 {
-    [Serializable, DataContract]
-    public class MethodSyncInfo
+    [Serializable, DataContract, MemoryPackable]
+    public partial class MethodSyncInfo
     {
         [DataMember(Order = 1)]
         public int MethodIdent { get; set; }

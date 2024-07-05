@@ -14,7 +14,7 @@ namespace ServiceWire.NamedPipes
         private IStats _stats = new NullStats();
 
         public string PipeName { get; set; }
-        public event EventHandler<PipeClientConnectionEventArgs> RequestReieved;
+        public event EventHandler<PipeClientConnectionEventArgs> RequestRecieved;
 
         public NpListener(string pipeName, int maxConnections = 254, ILog log = null, IStats stats = null)
         {
@@ -75,10 +75,10 @@ namespace ServiceWire.NamedPipes
         {
             try
             {
-                if (this.RequestReieved != null) //has event subscribers
+                if (this.RequestRecieved != null) //has event subscribers
                 {
                     var args = new PipeClientConnectionEventArgs(pipeStream);
-                    RequestReieved(this, args);
+                    RequestRecieved(this, args);
                 }
             }
             catch (Exception e)
@@ -87,8 +87,12 @@ namespace ServiceWire.NamedPipes
             }
             finally
             {
-                if (pipeStream.IsConnected) pipeStream.Close();
-                pipeStream.Dispose();
+                try
+                {
+                    if (pipeStream.IsConnected) pipeStream.Close();
+                    pipeStream.Dispose();
+                }
+                catch { } // ignore errors on closing and disposing because those woudl kill our pp
             }
         }
 

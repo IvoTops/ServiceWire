@@ -314,8 +314,12 @@ namespace ServiceWire
             }
             finally
             {
-                binReader.Close();
-                binWriter.Close();
+                try
+                {
+                    binReader.Close();
+                    binWriter.Close();
+                }
+                catch { }
             }
         }
 

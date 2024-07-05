@@ -150,7 +150,14 @@ namespace ServiceWire.TcpIp
                 {
                     if (null != stream)
                     {
-                        stream.Close();
+                        try
+                        {
+                            stream.Close();
+                        }
+                        catch (Exception closeException)
+                        {
+                            _log.Error("AcceptNewClient_closeSocket error: {0}", closeException.ToString().Flatten());
+                        }
                     }
                     if (null != activeSocket && activeSocket.Connected)
                     {

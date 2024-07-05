@@ -41,7 +41,7 @@ namespace ServiceWire.NamedPipes
             base.Stats = stats;
             _pipeName = pipeName;
             _listener = new NpListener(_pipeName, log: base.Log, stats: base.Stats);
-            _listener.RequestReieved += ClientConnectionMade;
+            _listener.RequestRecieved += ClientConnectionMade;
         }
 
         /// <summary>

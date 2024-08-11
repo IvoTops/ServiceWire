@@ -2,7 +2,6 @@ using ServiceWire.ZeroKnowledge;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -13,8 +12,8 @@ namespace ServiceWire
     {
         protected volatile bool _isOpen;
         protected volatile bool _continueListening = true;
-        protected bool _useCompression = false; //default is false
-        protected int _compressionThreshold = 131072; //128KB
+        protected bool _useCompression = true;// default is false
+        protected int _compressionThreshold = 16384; //128KB
         protected ILog _log = new NullLogger();
         protected IStats _stats = new NullStats();
         protected readonly ISerializer _serializer;
@@ -244,7 +243,7 @@ namespace ServiceWire
 
         protected void ProcessRequest(Stream stream)
         {
-            if (null == stream || (!stream.CanWrite && !stream.CanRead))
+            if (null == stream || !stream.CanWrite || !stream.CanRead)
             {
                 _log.Error("Cannot process a request on a stream that is not read/write.");
                 return;
@@ -262,7 +261,7 @@ namespace ServiceWire
         {
             if (null == readStream || null == writeStream) return;
 
-            var binReader = new BinaryReader(readStream);
+            var binReader = new BinaryReader(readStream);    
             var binWriter = new BinaryWriter(writeStream);
             bool doContinue = true;
             try
@@ -270,7 +269,7 @@ namespace ServiceWire
                 ZkSession zkSession = null;
                 do
                 {
-                    var sw = Stopwatch.StartNew();
+                    //var sw = Stopwatch.StartNew();
                     try
                     {
                         //read message type
@@ -278,21 +277,21 @@ namespace ServiceWire
                         switch (messageType)
                         {
                             case MessageType.MethodInvocation:
-                                ProcessInvocation(zkSession, binReader, binWriter, sw);
+                                ProcessInvocation(zkSession, binReader, binWriter);
                                 break;
                             case MessageType.TerminateConnection:
                                 doContinue = false;
                                 break;
                             case MessageType.ZkInitiate:
                                 zkSession = new ZkSession(_zkRepository, _log, _stats);
-                                doContinue = zkSession.ProcessZkInitiation(binReader, binWriter, sw);
+                                doContinue = zkSession.ProcessZkInitiation(binReader, binWriter);
                                 break;
                             case MessageType.ZkProof:
                                 if (null == zkSession) throw new NullReferenceException("session null");
-                                doContinue = zkSession.ProcessZkProof(binReader, binWriter, sw);
+                                doContinue = zkSession.ProcessZkProof(binReader, binWriter);
                                 break;
                             case MessageType.SyncInterface:
-                                ProcessSync(zkSession, binReader, binWriter, sw);
+                                ProcessSync(zkSession, binReader, binWriter);
                                 break;
                             default:
                                 doContinue = false;
@@ -301,10 +300,11 @@ namespace ServiceWire
                     }
                     catch (Exception e) //do not resume operation on this thread if any errors are unhandled.
                     {
-                        _log.Error("Error in ProcessRequest: {0}", e.ToString().Flatten());
+                        // do not log, we get disconnected streams all the time
+                        //_log.Error("Error in ProcessRequest: {0}", e.ToString().Flatten());
                         doContinue = false;
                     }
-                    sw.Stop();
+                    //sw.Stop();
                 }
                 while (doContinue);
             }
@@ -323,7 +323,7 @@ namespace ServiceWire
             }
         }
 
-        private void ProcessSync(ZkSession session, BinaryReader binReader, BinaryWriter binWriter, Stopwatch sw)
+        private void ProcessSync(ZkSession session, BinaryReader binReader, BinaryWriter binWriter)
         {
             var syncCat = "Sync";
 
@@ -369,8 +369,7 @@ namespace ServiceWire
                             binWriter.Write(encData.Length);
                             binWriter.Write(encData);
                             _log.Debug("Encrypted data sent server: {0}", Convert.ToBase64String(encData));
-                        }
-                        else
+                        } else
                         {
                             binWriter.Write(syncBytes.Length);
                             binWriter.Write(syncBytes);
@@ -383,10 +382,10 @@ namespace ServiceWire
                 binWriter.Write(0);
             }
             binWriter.Flush();
-            _log.Debug("SyncInterface for {0} in {1}ms.", syncCat, sw.ElapsedMilliseconds);
+            //_log.Debug("SyncInterface for {0} in {1}ms.", syncCat, sw.ElapsedMilliseconds);
         }
 
-        private void ProcessInvocation(ZkSession session, BinaryReader binReader, BinaryWriter binWriter, Stopwatch sw)
+        private void ProcessInvocation(ZkSession session, BinaryReader binReader, BinaryWriter binWriter)
         {
             //read service instance key
             var cat = "unknown";
@@ -431,18 +430,26 @@ namespace ServiceWire
                     var returnMessageType = MessageType.ReturnValues;
                     try
                     {
-                        object returnValue = method.Invoke(invokedInstance.SingletonInstance, parameters);
-                        if (returnValue is Task task)
+
+                        // todo: for weird empty param calls we bail out
+                        if (parameters == null)
                         {
-                            task.GetAwaiter().GetResult();
-                            var prop = task.GetType().GetProperty("Result");
-                            returnValue = prop?.GetValue(task);
+                            binWriter.Flush();
+                            return;
+                        } else
+                        {
+                            object returnValue = method.Invoke(invokedInstance.SingletonInstance, parameters);
+                            if (returnValue is Task task)
+                            {
+                                task.GetAwaiter().GetResult();
+                                var prop = task.GetType().GetProperty("Result");
+                                returnValue = prop?.GetValue(task);
+                            }
+                            //the result to the client is the return value (null if void) and the input parameters
+                            returnParameters = new object[1 + parameters.Length];
+                            returnParameters[0] = returnValue;
+                            for (int i = 0; i < parameters.Length; i++) returnParameters[i + 1] = isByRef[i] ? parameters[i] : null;
                         }
-                        //the result to the client is the return value (null if void) and the input parameters
-                        returnParameters = new object[1 + parameters.Length];
-                        returnParameters[0] = returnValue;
-                        for (int i = 0; i < parameters.Length; i++)
-                            returnParameters[i + 1] = isByRef[i] ? parameters[i] : null;
                     }
                     catch (Exception ex)
                     {
@@ -493,7 +500,7 @@ namespace ServiceWire
 
             //flush
             binWriter.Flush();
-            _stats.Log(cat, stat, sw.ElapsedMilliseconds);
+            //_stats.Log(cat, stat, sw.ElapsedMilliseconds);
         }
 
         #region IDisposable Members

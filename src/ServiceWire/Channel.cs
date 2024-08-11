@@ -17,12 +17,6 @@ namespace ServiceWire
             _compressor = compressor ?? new DefaultCompressor();
         }
 
-        public void InjectLoggerStats(ILog logger, IStats stats)
-        {
-            _logger = logger;
-            _stats = stats;
-        }
-
         /// <summary>
         /// Invokes the method with the specified parameters.
         /// </summary>

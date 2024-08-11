@@ -12,8 +12,7 @@ namespace ServiceWire.Aspects
 
         public InterceptPoint InterceptPoint { get { return _interceptPoint; } }
 
-        public InterceptChannel(Type interceptedType, InterceptPoint interceptPoint, ISerializer serializer, ICompressor compressor)
-            : base(serializer, compressor)
+        public InterceptChannel(Type interceptedType, InterceptPoint interceptPoint, ISerializer serializer, ICompressor compressor) : base(serializer, compressor)
         {
             _serviceType = interceptedType;
             _interceptPoint = interceptPoint;

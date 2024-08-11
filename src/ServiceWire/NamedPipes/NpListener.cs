@@ -75,7 +75,7 @@ namespace ServiceWire.NamedPipes
         {
             try
             {
-                if (this.RequestRecieved != null) //has event subscribers
+                if (this.RequestRecieved != null && pipeStream.IsConnected) //has event subscribers
                 {
                     var args = new PipeClientConnectionEventArgs(pipeStream);
                     RequestRecieved(this, args);

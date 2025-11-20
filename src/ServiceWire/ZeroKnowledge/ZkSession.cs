@@ -32,7 +32,7 @@ namespace ServiceWire.ZeroKnowledge
 
         public ZkCrypto Crypto { get { return _zkCrypto; } }
 
-        public bool ProcessZkProof(BinaryReader binReader, BinaryWriter binWriter, Stopwatch sw)
+        public bool ProcessZkProof(BinaryReader binReader, BinaryWriter binWriter)
         {
             _clientSessionHash = binReader.ReadBytes(32);
             _logger.Debug("ZkProof client session hash received: {0}", Convert.ToBase64String(_clientSessionHash));
@@ -53,7 +53,7 @@ namespace ServiceWire.ZeroKnowledge
             return true;
         }
 
-        public bool ProcessZkInitiation(BinaryReader binReader, BinaryWriter binWriter, Stopwatch sw)
+        public bool ProcessZkInitiation(BinaryReader binReader, BinaryWriter binWriter)
         {
             _username = binReader.ReadString();
             _aEphemeral = binReader.ReadBytes(32);

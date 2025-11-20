@@ -36,7 +36,7 @@ namespace ServiceWire
                 {
                     Type type = parameter.GetType();
                     byte typeByte = GetParameterType(type);
-                    
+
                     byte[] dataBytes = null;
 
                     switch (typeByte)
@@ -49,7 +49,7 @@ namespace ServiceWire
                             break;
                     }
 
-                    if (useCompression)
+                    if (useCompression && dataBytes != null)
                     {
                         //check for compressable values and compress if required
                         switch (typeByte)
@@ -76,15 +76,15 @@ namespace ServiceWire
                                     dataBytes = _compressor.Compress(Encoding.UTF8.GetBytes(((string)parameter)));
                                 }
                                 break;
-                            case ParameterTypes.ArrayString:
-                                var array = (string[])parameter;
-                                var total = (from n in array select n.Length).Sum();
-                                if (total > compressionThreshold)
-                                {
-                                    typeByte = ParameterTypes.Unknown;
-                                    dataBytes = _compressor.Compress(_serializer.Serialize(array, type.ToConfigName()));
-                                }
-                                break;
+                            //case ParameterTypes.ArrayString:
+                            //    var array = (string[])parameter;
+                            //    var total = (from n in array select n.Length).Sum();
+                            //    if (total > compressionThreshold)
+                            //    {
+                            //        typeByte = ParameterTypes.CompressedUnknown;
+                            //        dataBytes = _compressor.Compress(_serializer.Serialize(array, type.ToConfigName()));
+                            //    }
+                            //    break;
                             case ParameterTypes.Unknown:
                                 if (dataBytes.Length > compressionThreshold)
                                 {
@@ -157,82 +157,94 @@ namespace ServiceWire
                             writer.Write(((DateTime)parameter).ToString("o"));
                             break;
 
-                        case ParameterTypes.ArrayBool:
-                            var bools = (bool[])parameter;
-                            writer.Write(bools.Length);
-                            foreach (var b in bools) writer.Write(b);
-                            break;
-                        case ParameterTypes.ArraySByte:
-                            var sbytes = (sbyte[])parameter;
-                            writer.Write(sbytes.Length);
-                            foreach (var sb in sbytes) writer.Write(sb);
-                            break;
-                        case ParameterTypes.ArrayDecimal:
-                            var decs = (decimal[])parameter;
-                            writer.Write(decs.Length);
-                            foreach (var d in decs) writer.Write(d);
-                            break;
-                        case ParameterTypes.ArrayDouble:
-                            var dbls = (double[])parameter;
-                            writer.Write(dbls.Length);
-                            foreach (var db in dbls) writer.Write(db);
-                            break;
-                        case ParameterTypes.ArrayFloat:
-                            var fls = (float[])parameter;
-                            writer.Write(fls.Length);
-                            foreach (var f in fls) writer.Write(f);
-                            break;
-                        case ParameterTypes.ArrayInt:
-                            var ints = (int[])parameter;
-                            writer.Write(ints.Length);
-                            foreach (var i in ints) writer.Write(i);
-                            break;
-                        case ParameterTypes.ArrayUInt:
-                            var uints = (uint[])parameter;
-                            writer.Write(uints.Length);
-                            foreach (var u in uints) writer.Write(u);
-                            break;
-                        case ParameterTypes.ArrayLong:
-                            var longs = (long[])parameter;
-                            writer.Write(longs.Length);
-                            foreach (var lg in longs) writer.Write(lg);
-                            break;
-                        case ParameterTypes.ArrayULong:
-                            var ulongs = (ulong[])parameter;
-                            writer.Write(ulongs.Length);
-                            foreach (var ul in ulongs) writer.Write(ul);
-                            break;
-                        case ParameterTypes.ArrayShort:
-                            var shorts = (short[])parameter;
-                            writer.Write(shorts.Length);
-                            foreach (var s in shorts) writer.Write(s);
-                            break;
-                        case ParameterTypes.ArrayUShort:
-                            var ushorts = (ushort[])parameter;
-                            writer.Write(ushorts.Length);
-                            foreach (var us in ushorts) writer.Write(us);
-                            break;
-                        case ParameterTypes.ArrayString:
-                            var strings = (string[])parameter;
-                            writer.Write(strings.Length);
-                            foreach (var st in strings) writer.Write(st ?? NULL_STRING);
-                            break;
-                        case ParameterTypes.ArrayType:
-                            var types = (Type[])parameter;
-                            writer.Write(types.Length);
-                            foreach (var t in types)
-                                writer.Write(t.ToConfigName());
-                            break;
-                        case ParameterTypes.ArrayGuid:
-                            var guids = (Guid[])parameter;
-                            writer.Write(guids.Length);
-                            foreach (var g in guids) writer.Write(g.ToByteArray());
-                            break;
-                        case ParameterTypes.ArrayDateTime:
-                            var dts = (DateTime[])parameter;
-                            writer.Write(dts.Length);
-                            foreach (var dt in dts) writer.Write(dt.ToString("o"));
-                            break;
+                        //case ParameterTypes.ArrayBool:
+                        //    var bools = (bool[])parameter;
+                        //    writer.Write(bools.Length);
+                        //    foreach (var b in bools) writer.Write(b);
+                        //    break;
+                        //case ParameterTypes.ArraySByte:
+                        //    var sbytes = (sbyte[])parameter;
+                        //    writer.Write(sbytes.Length);
+                        //    foreach (var sb in sbytes) writer.Write(sb);
+                        //    break;
+                        //case ParameterTypes.ArrayDecimal:
+                        //    var decs = (decimal[])parameter;
+                        //    writer.Write(decs.Length);
+                        //    foreach (var d in decs) writer.Write(d);
+                        //    break;
+                        //case ParameterTypes.ArrayDouble:
+                        //    var dbls = (double[])parameter;
+                        //    writer.Write(dbls.Length);
+                        //    foreach (var db in dbls) writer.Write(db);
+                        //    break;
+                        //case ParameterTypes.ArrayFloat:
+                        //    var fls = (float[])parameter;
+                        //    writer.Write(fls.Length);
+                        //    foreach (var f in fls) writer.Write(f);
+                        //    break;
+                        //case ParameterTypes.ArrayInt:
+                        //    var ints = (int[])parameter;
+                        //    writer.Write(ints.Length);
+                        //    foreach (var i in ints) writer.Write(i);
+                        //    break;
+                        //case ParameterTypes.ArrayUInt:
+                        //    var uints = (uint[])parameter;
+                        //    writer.Write(uints.Length);
+                        //    foreach (var u in uints) writer.Write(u);
+                        //    break;
+                        //case ParameterTypes.ArrayLong:
+                        //    var longs = (long[])parameter;
+                        //    writer.Write(longs.Length);
+                        //    foreach (var lg in longs) writer.Write(lg);
+                        //    break;
+                        //case ParameterTypes.ArrayULong:
+                        //    var ulongs = (ulong[])parameter;
+                        //    writer.Write(ulongs.Length);
+                        //    foreach (var ul in ulongs) writer.Write(ul);
+                        //    break;
+                        //case ParameterTypes.ArrayShort:
+                        //    var shorts = (short[])parameter;
+                        //    writer.Write(shorts.Length);
+                        //    foreach (var s in shorts) writer.Write(s);
+                        //    break;
+                        //case ParameterTypes.ArrayUShort:
+                        //    var ushorts = (ushort[])parameter;
+                        //    writer.Write(ushorts.Length);
+                        //    foreach (var us in ushorts) writer.Write(us);
+                        //    break;
+                        //case ParameterTypes.ArrayString:
+                        //    var strings = (string[])parameter;
+                        //    writer.Write(strings.Length);
+                        //    foreach (var st in strings) writer.Write(st ?? NULL_STRING);
+                        //    break;
+                        //case ParameterTypes.ArrayType:
+                        //    var types = (Type[])parameter;
+                        //    writer.Write(types.Length);
+                        //    foreach (var t in types)
+                        //        writer.Write(t.ToConfigName());
+                        //    break;
+                        //case ParameterTypes.ArrayGuid:
+                        //    var guids = (Guid[])parameter;
+                        //    writer.Write(guids.Length);
+                        //    foreach (var g in guids) writer.Write(g.ToByteArray());
+                        //    break;
+                        //case ParameterTypes.ArrayDateTime:
+                        //    var dts = (DateTime[])parameter;
+                        //    writer.Write(dts.Length);
+                        //    foreach (var dt in dts) writer.Write(dt.ToString("o"));
+                        //    break;
+
+                        //case ParameterTypes.ArrayDateOnly:
+                        //    var dos = (DateOnly[])parameter;
+                        //    writer.Write(dos.Length);
+                        //    foreach (var dt in dos) writer.Write(dt.ToString("o"));
+                        //    break;
+
+                        //case ParameterTypes.ArrayTimeOnly:
+                        //    var tos = (TimeOnly[])parameter;
+                        //    writer.Write(tos.Length);
+                        //    foreach (var dt in tos) writer.Write(dt.ToString("o"));
+                        //    break;
 
                         case ParameterTypes.ByteArray:
                         case ParameterTypes.CompressedByteArray:
@@ -248,9 +260,10 @@ namespace ServiceWire
                             //write type name as string
                             writer.Write(type.ToConfigName());
                             //write length of data
-                            writer.Write(dataBytes.Length);
+                            var len = dataBytes?.Length ?? 0;
+                            writer.Write(len);
                             //write data
-                            writer.Write(dataBytes);
+                            if (len > 0) writer.Write(dataBytes);
                             break;
                         default:
                             throw new Exception(string.Format("Unknown type byte '0x{0:X}'", typeByte));
@@ -345,108 +358,129 @@ namespace ServiceWire
                             parameters[i] = DateTime.Parse(dtstr, null, DateTimeStyles.RoundtripKind);
                             break;
 
-                        case ParameterTypes.ArrayBool:
-                            var blen = reader.ReadInt32();
-                            var bs = new bool[blen];
-                            for (int x = 0; x < blen; x++) bs[x] = reader.ReadBoolean();
-                            parameters[i] = bs;
-                            break;
-                        case ParameterTypes.ArraySByte:
-                            var sblen = reader.ReadInt32();
-                            var sbs = new sbyte[sblen];
-                            for (int x = 0; x < sblen; x++) sbs[x] = reader.ReadSByte();
-                            parameters[i] = sbs;
-                            break;
-                        case ParameterTypes.ArrayDecimal:
-                            var dclen = reader.ReadInt32();
-                            var dcs = new decimal[dclen];
-                            for (int x = 0; x < dclen; x++) dcs[x] = reader.ReadDecimal();
-                            parameters[i] = dcs;
-                            break;
-                        case ParameterTypes.ArrayDouble:
-                            var dblen = reader.ReadInt32();
-                            var dbs = new double[dblen];
-                            for (int x = 0; x < dblen; x++) dbs[x] = reader.ReadDouble();
-                            parameters[i] = dbs;
-                            break;
-                        case ParameterTypes.ArrayFloat:
-                            var flen = reader.ReadInt32();
-                            var fs = new float[flen];
-                            for (int x = 0; x < flen; x++) fs[x] = reader.ReadSingle();
-                            parameters[i] = fs;
-                            break;
-                        case ParameterTypes.ArrayInt:
-                            var ilen = reader.ReadInt32();
-                            var iss = new int[ilen];
-                            for (int x = 0; x < ilen; x++) iss[x] = reader.ReadInt32();
-                            parameters[i] = iss;
-                            break;
-                        case ParameterTypes.ArrayUInt:
-                            var uilen = reader.ReadInt32();
-                            var uis = new uint[uilen];
-                            for (int x = 0; x < uilen; x++) uis[x] = reader.ReadUInt32();
-                            parameters[i] = uis;
-                            break;
-                        case ParameterTypes.ArrayLong:
-                            var llen = reader.ReadInt32();
-                            var ls = new long[llen];
-                            for (int x = 0; x < llen; x++) ls[x] = reader.ReadInt64();
-                            parameters[i] = ls;
-                            break;
-                        case ParameterTypes.ArrayULong:
-                            var ullen = reader.ReadInt32();
-                            var uls = new ulong[ullen];
-                            for (int x = 0; x < ullen; x++) uls[x] = reader.ReadUInt64();
-                            parameters[i] = uls;
-                            break;
-                        case ParameterTypes.ArrayShort:
-                            var sslen = reader.ReadInt32();
-                            var sss = new short[sslen];
-                            for (int x = 0; x < sslen; x++) sss[x] = reader.ReadInt16();
-                            parameters[i] = sss;
-                            break;
-                        case ParameterTypes.ArrayUShort:
-                            var ulen = reader.ReadInt32();
-                            var us = new ushort[ulen];
-                            for (int x = 0; x < ulen; x++) us[x] = reader.ReadUInt16();
-                            parameters[i] = us;
-                            break;
-                        case ParameterTypes.ArrayString:
-                            var slen = reader.ReadInt32();
-                            var ss = new string[slen];
-                            for (int x = 0; x < slen; x++)
-                            {
-                                ss[x] = reader.ReadString();
-                                if (ss[x] == NULL_STRING) ss[x] = null;
-                            }
-                            parameters[i] = ss;
-                            break;
-                        case ParameterTypes.ArrayType:
-                            var tlen = reader.ReadInt32();
-                            var ts = new Type[tlen];
-                            for (int x = 0; x < tlen; x++) ts[x] = Type.GetType(reader.ReadString());
-                            parameters[i] = ts;
-                            break;
-                        case ParameterTypes.ArrayGuid:
-                            var glen = reader.ReadInt32();
-                            var gs = new Guid[glen];
-                            for (int x = 0; x < glen; x++) gs[x] = new Guid(reader.ReadBytes(16));
-                            parameters[i] = gs;
-                            break;
-                        case ParameterTypes.ArrayDateTime:
-                            var dlen = reader.ReadInt32();
-                            var dts = new DateTime[dlen];
-                            for (int x = 0; x < dlen; x++)
-                            {
-                                var adtstr = reader.ReadString();
-                                dts[x] = DateTime.Parse(adtstr, null, DateTimeStyles.RoundtripKind);
-                            }
-                            parameters[i] = dts;
-                            break;
-
+                        //case ParameterTypes.ArrayBool:
+                        //    var blen = reader.ReadInt32();
+                        //    var bs = new bool[blen];
+                        //    for (int x = 0; x < blen; x++) bs[x] = reader.ReadBoolean();
+                        //    parameters[i] = bs;
+                        //    break;
+                        //case ParameterTypes.ArraySByte:
+                        //    var sblen = reader.ReadInt32();
+                        //    var sbs = new sbyte[sblen];
+                        //    for (int x = 0; x < sblen; x++) sbs[x] = reader.ReadSByte();
+                        //    parameters[i] = sbs;
+                        //    break;
+                        //case ParameterTypes.ArrayDecimal:
+                        //    var dclen = reader.ReadInt32();
+                        //    var dcs = new decimal[dclen];
+                        //    for (int x = 0; x < dclen; x++) dcs[x] = reader.ReadDecimal();
+                        //    parameters[i] = dcs;
+                        //    break;
+                        //case ParameterTypes.ArrayDouble:
+                        //    var dblen = reader.ReadInt32();
+                        //    var dbs = new double[dblen];
+                        //    for (int x = 0; x < dblen; x++) dbs[x] = reader.ReadDouble();
+                        //    parameters[i] = dbs;
+                        //    break;
+                        //case ParameterTypes.ArrayFloat:
+                        //    var flen = reader.ReadInt32();
+                        //    var fs = new float[flen];
+                        //    for (int x = 0; x < flen; x++) fs[x] = reader.ReadSingle();
+                        //    parameters[i] = fs;
+                        //    break;
+                        //case ParameterTypes.ArrayInt:
+                        //    var ilen = reader.ReadInt32();
+                        //    var iss = new int[ilen];
+                        //    for (int x = 0; x < ilen; x++) iss[x] = reader.ReadInt32();
+                        //    parameters[i] = iss;
+                        //    break;
+                        //case ParameterTypes.ArrayUInt:
+                        //    var uilen = reader.ReadInt32();
+                        //    var uis = new uint[uilen];
+                        //    for (int x = 0; x < uilen; x++) uis[x] = reader.ReadUInt32();
+                        //    parameters[i] = uis;
+                        //    break;
+                        //case ParameterTypes.ArrayLong:
+                        //    var llen = reader.ReadInt32();
+                        //    var ls = new long[llen];
+                        //    for (int x = 0; x < llen; x++) ls[x] = reader.ReadInt64();
+                        //    parameters[i] = ls;
+                        //    break;
+                        //case ParameterTypes.ArrayULong:
+                        //    var ullen = reader.ReadInt32();
+                        //    var uls = new ulong[ullen];
+                        //    for (int x = 0; x < ullen; x++) uls[x] = reader.ReadUInt64();
+                        //    parameters[i] = uls;
+                        //    break;
+                        //case ParameterTypes.ArrayShort:
+                        //    var sslen = reader.ReadInt32();
+                        //    var sss = new short[sslen];
+                        //    for (int x = 0; x < sslen; x++) sss[x] = reader.ReadInt16();
+                        //    parameters[i] = sss;
+                        //    break;
+                        //case ParameterTypes.ArrayUShort:
+                        //    var ulen = reader.ReadInt32();
+                        //    var us = new ushort[ulen];
+                        //    for (int x = 0; x < ulen; x++) us[x] = reader.ReadUInt16();
+                        //    parameters[i] = us;
+                        //    break;
+                        //case ParameterTypes.ArrayString:
+                        //    var slen = reader.ReadInt32();
+                        //    var ss = new string[slen];
+                        //    for (int x = 0; x < slen; x++)
+                        //    {
+                        //        ss[x] = reader.ReadString();
+                        //        if (ss[x] == NULL_STRING) ss[x] = null;
+                        //    }
+                        //    parameters[i] = ss;
+                        //    break;
+                        //case ParameterTypes.ArrayType:
+                        //    var tlen = reader.ReadInt32();
+                        //    var ts = new Type[tlen];
+                        //    for (int x = 0; x < tlen; x++) ts[x] = Type.GetType(reader.ReadString());
+                        //    parameters[i] = ts;
+                        //    break;
+                        //case ParameterTypes.ArrayGuid:
+                        //    var glen = reader.ReadInt32();
+                        //    var gs = new Guid[glen];
+                        //    for (int x = 0; x < glen; x++) gs[x] = new Guid(reader.ReadBytes(16));
+                        //    parameters[i] = gs;
+                        //    break;
+                        //case ParameterTypes.ArrayDateTime:
+                        //    var dlen = reader.ReadInt32();
+                        //    var dts = new DateTime[dlen];
+                        //    for (int x = 0; x < dlen; x++)
+                        //    {
+                        //        var adtstr = reader.ReadString();
+                        //        dts[x] = DateTime.Parse(adtstr, null, DateTimeStyles.RoundtripKind);
+                        //    }
+                        //    parameters[i] = dts;
+                        //    break;
+                        //case ParameterTypes.ArrayDateOnly:
+                        //    var dolen = reader.ReadInt32();
+                        //    var dos = new DateOnly[dolen];
+                        //    for (int x = 0; x < dolen; x++)
+                        //    {
+                        //        var adtstr = reader.ReadString();
+                        //        dos[x] = DateOnly.Parse(adtstr, null, DateTimeStyles.RoundtripKind);
+                        //    }
+                        //    parameters[i] = dos;
+                        //    break;
+                        //case ParameterTypes.ArrayTimeOnly:
+                        //    var tolen = reader.ReadInt32();
+                        //    var tos = new DateTime[tolen];
+                        //    for (int x = 0; x < tolen; x++)
+                        //    {
+                        //        var adtstr = reader.ReadString();
+                        //        tos[x] = DateTime.Parse(adtstr, null, DateTimeStyles.RoundtripKind);
+                        //    }
+                        //    parameters[i] = tos;
+                        //    break;
                         case ParameterTypes.Unknown:
                             var typeConfigName = reader.ReadString();
-                            var bytes = reader.ReadBytes(reader.ReadInt32());
+                            if (typeConfigName == null || typeConfigName == "") return null;
+                            var countBytes = reader.ReadInt32();
+                            var bytes = countBytes > 0 ? reader.ReadBytes(countBytes) : null;
                             parameters[i] = _serializer.Deserialize(bytes, typeConfigName);
                             break;
                         case ParameterTypes.CompressedUnknown:
@@ -465,8 +499,7 @@ namespace ServiceWire
         private byte GetParameterType(Type type)
         {
             InitializeParamTypes();
-            if (_parameterTypes.ContainsKey(type))
-                return _parameterTypes[type];
+            if (_parameterTypes.ContainsKey(type)) return _parameterTypes[type];
             return ParameterTypes.Unknown;
         }
 
@@ -494,22 +527,27 @@ namespace ServiceWire
                 _parameterTypes.Add(typeof(Type), ParameterTypes.Type);
                 _parameterTypes.Add(typeof(Guid), ParameterTypes.Guid);
                 _parameterTypes.Add(typeof(DateTime), ParameterTypes.DateTime);
+                _parameterTypes.Add(typeof(DateOnly), ParameterTypes.DateOnly);
+                _parameterTypes.Add(typeof(TimeOnly), ParameterTypes.TimeOnly);
 
-                _parameterTypes.Add(typeof(bool[]), ParameterTypes.ArrayBool);
-                _parameterTypes.Add(typeof(sbyte[]), ParameterTypes.ArraySByte);
-                _parameterTypes.Add(typeof(decimal[]), ParameterTypes.ArrayDecimal);
-                _parameterTypes.Add(typeof(double[]), ParameterTypes.ArrayDouble);
-                _parameterTypes.Add(typeof(float[]), ParameterTypes.ArrayFloat);
-                _parameterTypes.Add(typeof(int[]), ParameterTypes.ArrayInt);
-                _parameterTypes.Add(typeof(uint[]), ParameterTypes.ArrayUInt);
-                _parameterTypes.Add(typeof(long[]), ParameterTypes.ArrayLong);
-                _parameterTypes.Add(typeof(ulong[]), ParameterTypes.ArrayULong);
-                _parameterTypes.Add(typeof(short[]), ParameterTypes.ArrayShort);
-                _parameterTypes.Add(typeof(ushort[]), ParameterTypes.ArrayUShort);
-                _parameterTypes.Add(typeof(string[]), ParameterTypes.ArrayString);
-                _parameterTypes.Add(typeof(Type[]), ParameterTypes.ArrayType);
-                _parameterTypes.Add(typeof(Guid[]), ParameterTypes.ArrayGuid);
-                _parameterTypes.Add(typeof(DateTime[]), ParameterTypes.ArrayDateTime);
+                //_parameterTypes.Add(typeof(bool[]), ParameterTypes.ArrayBool);
+                //_parameterTypes.Add(typeof(sbyte[]), ParameterTypes.ArraySByte);
+                //_parameterTypes.Add(typeof(decimal[]), ParameterTypes.ArrayDecimal);
+                //_parameterTypes.Add(typeof(double[]), ParameterTypes.ArrayDouble);
+                //_parameterTypes.Add(typeof(float[]), ParameterTypes.ArrayFloat);
+                //_parameterTypes.Add(typeof(int[]), ParameterTypes.ArrayInt);
+                //_parameterTypes.Add(typeof(uint[]), ParameterTypes.ArrayUInt);
+                //_parameterTypes.Add(typeof(long[]), ParameterTypes.ArrayLong);
+                //_parameterTypes.Add(typeof(ulong[]), ParameterTypes.ArrayULong);
+                //_parameterTypes.Add(typeof(short[]), ParameterTypes.ArrayShort);
+                //_parameterTypes.Add(typeof(ushort[]), ParameterTypes.ArrayUShort);
+                //_parameterTypes.Add(typeof(string[]), ParameterTypes.ArrayString);
+                //_parameterTypes.Add(typeof(Type[]), ParameterTypes.ArrayType);
+                //_parameterTypes.Add(typeof(Guid[]), ParameterTypes.ArrayGuid);
+                //_parameterTypes.Add(typeof(DateTime[]), ParameterTypes.ArrayDateTime);
+                //_parameterTypes.Add(typeof(DateOnly[]), ParameterTypes.ArrayDateOnly);
+                //_parameterTypes.Add(typeof(TimeOnly[]), ParameterTypes.ArrayTimeOnly);
+
             }
         }
     }

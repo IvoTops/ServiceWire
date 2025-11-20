@@ -24,7 +24,7 @@ namespace ServiceWire.Aspects
                 Cut = crossCuttingConcerns
             },
             serializer,
-            compressor);
+            compressor            );
             return interceptedTarget;
         }
     }

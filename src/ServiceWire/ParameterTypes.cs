@@ -23,26 +23,31 @@ namespace ServiceWire
         internal const byte Type        = 0x12;
         internal const byte Guid        = 0x13;
         internal const byte DateTime    = 0x14;
+        internal const byte DateOnly    = 0x15;
+        internal const byte TimeOnly    = 0x16;
 
         internal const byte CompressedByteArray     = 0x20;
         internal const byte CompressedCharArray     = 0x21;
         internal const byte CompressedString        = 0x22;
         internal const byte CompressedUnknown       = 0x23;
 
-        internal const byte ArrayBool        = 0x41;
-        internal const byte ArraySByte       = 0x43;
-        internal const byte ArrayDecimal     = 0x45;
-        internal const byte ArrayDouble      = 0x46;
-        internal const byte ArrayFloat       = 0x47;
-        internal const byte ArrayInt         = 0x48;
-        internal const byte ArrayUInt        = 0x49;
-        internal const byte ArrayLong        = 0x4A;
-        internal const byte ArrayULong       = 0x4B;
-        internal const byte ArrayShort       = 0x4C;
-        internal const byte ArrayUShort      = 0x4D;
-        internal const byte ArrayString      = 0x4E;
-        internal const byte ArrayType        = 0x52;
-        internal const byte ArrayGuid        = 0x53;
-        internal const byte ArrayDateTime    = 0x54;
+        //internal const byte ArrayBool        = 0x41;
+        //internal const byte ArraySByte       = 0x43;
+        //internal const byte ArrayDecimal     = 0x45;
+        //internal const byte ArrayDouble      = 0x46;
+        //internal const byte ArrayFloat       = 0x47;
+        //internal const byte ArrayInt         = 0x48;
+        //internal const byte ArrayUInt        = 0x49;
+        //internal const byte ArrayLong        = 0x4A;
+        //internal const byte ArrayULong       = 0x4B;
+        //internal const byte ArrayShort       = 0x4C;
+        //internal const byte ArrayUShort      = 0x4D;
+        //internal const byte ArrayString      = 0x4E;
+        //internal const byte ArrayType        = 0x52;
+        //internal const byte ArrayGuid        = 0x53;
+        //internal const byte ArrayDateTime    = 0x54;
+        //internal const byte ArrayDateOnly    = 0x55;
+        //internal const byte ArrayTimeOnly    = 0x56;
+
     }
 }

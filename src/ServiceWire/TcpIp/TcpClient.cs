@@ -27,13 +27,7 @@ namespace ServiceWire.TcpIp
             if (null == compressor) compressor = new DefaultCompressor();
             Proxy = TcpProxy.CreateProxy<TInterface>(endpoint, serializer, compressor);
         }
-
-        public void InjectLoggerStats(ILog logger, IStats stats)
-        {
-            var channel = Proxy as Channel;
-            channel?.InjectLoggerStats(logger, stats);
-        }
-
+               
         public bool IsConnected => (Proxy as TcpChannel)?.IsConnected == true;
 
         #region IDisposable Members

@@ -1,10 +1,11 @@
-﻿using System;
+﻿using MemoryPack;
+using System;
 using System.Runtime.Serialization;
 
 namespace ServiceWire
 {
-    [Serializable, DataContract]
-    public class ServiceSyncInfo
+    [Serializable, DataContract, MemoryPackable]
+    public partial class ServiceSyncInfo
     {
         [DataMember(Order = 1)]
         public int ServiceKeyIndex { get; set; }

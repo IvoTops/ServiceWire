@@ -20,8 +20,7 @@ namespace ServiceWire.TcpIp
         /// <param name="endpoint"></param>
         /// <param name="serializer">Inject your own serializer for complex objects and avoid using the Newtonsoft JSON DefaultSerializer.</param>
         /// <param name="compressor">Inject your own compressor and avoid using the standard GZIP DefaultCompressor.</param>
-        public TcpChannel(Type serviceType, IPEndPoint endpoint, ISerializer serializer, ICompressor compressor)
-            : base(serializer, compressor)
+        public TcpChannel(Type serviceType, IPEndPoint endpoint, ISerializer serializer, ICompressor compressor) : base(serializer, compressor)
         {
             Initialize(null, null, serviceType, endpoint, 2500);
         }

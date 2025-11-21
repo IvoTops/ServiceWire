@@ -15,7 +15,6 @@
 		<PackageReleaseNotes>Contributed support for proper async exceptions.</PackageReleaseNotes>
    
     <TargetFramework>net10.0</TargetFramework>
-    <TargetFramework>net9.0</TargetFramework>
     <PlatformTarget>x64</PlatformTarget>
     <Platforms>AnyCPU;x64</Platforms>
 
@@ -31,7 +30,6 @@
 		<PackageReference Include="System.IO.Pipes" Version="4.3.0" />
 		<PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
 		<PackageReference Include="System.Text.Json" Version="10.0.0" />
-		<PackageReference Include="System.Text.Json" Version="9.0.0" />
 		<PackageReference Include="System.Threading" Version="4.3.0" />
 	</ItemGroup>
 
